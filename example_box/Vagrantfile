@@ -14,10 +14,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Usage:
+#   $ vagrant up --provider=google
+#   $ vagrant destroy
+
+# Customize these global variables
+$GOOGLE_PROJECT_ID = "decoded-shadow-669"
+$GOOGLE_CLIENT_EMAIL = "185837917685-5q0a3t8sot4bu9hrossl49ivkbc1gudp@developer.gserviceaccount.com" 
+$GOOGLE_KEY_LOCATION = "~/.ssh/google_private_key.p12" 
+$LOCAL_USER = "akhileshpillai"
+$LOCAL_SSH_KEY = "~/.ssh/id_rsa"
+
 Vagrant.configure("2") do |config|
-  config.vm.provider :google do |google|
+
+  config.vm.box = "gce"
+
+  config.vm.provider :google do |google, override|
+    google.google_project_id = $GOOGLE_PROJECT_ID
+    google.google_client_email = $GOOGLE_CLIENT_EMAIL
+    google.google_key_location = $GOOGLE_KEY_LOCATION
+
+    # Override provider defaults
+    google.name = "testing-vagrant"
     google.image = "debian-7-wheezy-v20140619"
-    google.machine_type = "n1-standard-1"
-    google.zone = "us-central1-b"
+    google.machine_type = "n1-standard-4"
+    google.zone = "us-central1-a"
+    google.metadata = {'custom' => 'metadata', 'server' => 'cityalert'}
+
+    override.ssh.username = $LOCAL_USER
+    override.ssh.private_key_path = $LOCAL_SSH_KEY
   end
 end
